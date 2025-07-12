@@ -37,40 +37,8 @@
 					</svg>
 				</a>
 			</div>
-
-			<!-- Navigation Links -->
-			<!-- <div class="hidden md:block">
-				<div class="ml-10 flex items-baseline space-x-8">
-					<a href="/" class="text-foreground hover:text-primary px-3 py-2 text-sm font-medium transition-colors">
-						Home
-					</a>
-					<a href="/about" class="text-muted-foreground hover:text-foreground px-3 py-2 text-sm font-medium transition-colors">
-						About
-					</a>
-					<a href="/services" class="text-muted-foreground hover:text-foreground px-3 py-2 text-sm font-medium transition-colors">
-						Services
-					</a>
-					<a href="/contact" class="text-muted-foreground hover:text-foreground px-3 py-2 text-sm font-medium transition-colors">
-						Contact
-					</a>
-				</div>
-			</div> -->
-
-			<!-- CTA Button -->
-			<div class="hidden md:block">
-				<!-- <a href="/get-started" class="bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors">
-					Get Started
-				</a> -->
+			<div>
         <Button href="https://app.eko-app.com" target="_blank" rel="noopener noreferrer">Web App (Beta)<MoveUpRight /></Button>
-			</div>
-
-			<!-- Mobile menu button -->
-			<div class="md:hidden">
-				<button type="button" class="text-muted-foreground hover:text-foreground focus:outline-none focus:text-foreground transition-colors" aria-label="Open mobile menu">
-					<svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-					</svg>
-				</button>
 			</div>
 		</div>
 	</div>
