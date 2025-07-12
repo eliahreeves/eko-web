@@ -20,7 +20,7 @@
 	
 	function sendNewResetLink() {
         isLoading = true;
-		supabase.auth.resetPasswordForEmail(email, { redirectTo: `www.eko-app.com/auth/reset-password` })
+		supabase.auth.resetPasswordForEmail(email, { redirectTo: `https://www.eko-app.com/auth/reset-password` })
 			.then(() => {
                 toast.success('Password reset link sent to your email');
                 isLoading = false;
