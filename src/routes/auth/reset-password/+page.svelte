@@ -6,6 +6,8 @@
 	import { ArrowLeft, Lock, Eye, EyeOff, AlertCircle } from '@lucide/svelte';
 	import { supabase } from '$lib/supabase.js';
 	import type { PageData } from './$types';
+    import { Toaster, toast } from 'svelte-sonner'
+
 	
 	export let data: PageData;
 	
@@ -20,12 +22,12 @@
         isLoading = true;
 		supabase.auth.resetPasswordForEmail(email, { redirectTo: `www.eko-app.com/auth/reset-password` })
 			.then(() => {
-				alert('Password reset link sent to your email');
+                toast.success('Password reset link sent to your email');
                 isLoading = false;
 			})
 			.catch((error) => {
 				console.error('Error sending password reset link:', error);
-				alert('Failed to send password reset link. Please try again.');
+				toast.error('Failed to send password reset link. Please try again.');
                 isLoading = false;
 			});
 	}
@@ -42,12 +44,12 @@
 		event.preventDefault();
 		
 		if (password !== confirmPassword) {
-			alert('Passwords do not match');
+			toast.error('Passwords do not match');
 			return;
 		}
 		
 		if (password.length < 8) {
-			alert('Password must be at least 8 characters long');
+			toast.error('Password must be at least 8 characters long');
 			return;
 		}
 		
@@ -59,17 +61,17 @@
 				isLoading = false;
 				if (error) {
 					console.error('Password update error:', error);
-					alert('Failed to reset password. Please try again.');
+					toast.error('Failed to reset password. Please try again.');
 				} else {
-					alert('Password reset successfully! You can now log in with your new password.');
+					toast.success('Password reset successfully!');
 					// Redirect to login or home page
-					window.location.href = '/auth';
+					window.location.href = '/';
 				}
 			})
 			.catch((err) => {
 				isLoading = false;
 				console.error('Unexpected error:', err);
-				alert('An unexpected error occurred. Please try again.');
+				toast.error('An unexpected error occurred. Please try again.');
 			});
 	}
 </script>
@@ -79,6 +81,7 @@
 	<meta name="description" content="Create a new password for your Eko account" />
 </svelte:head>
 
+<Toaster richColors  />
 <div class="min-h-screen bg-gradient-to-br from-background to-muted/50 flex items-center justify-center p-4 sm:p-4">
 	<div class="w-full max-w-md">
 		<Card class="sm:shadow-2xl sm:border-0 sm:bg-card/95 sm:backdrop-blur-sm border-0 shadow-none bg-transparent">

@@ -41,6 +41,7 @@
 		"vite": "^7.0.4"
 	},
 	"dependencies": {
-		"@supabase/supabase-js": "^2.50.5"
+		"@supabase/supabase-js": "^2.50.5",
+		"svelte-sonner": "^1.0.5"
 	}
 }
