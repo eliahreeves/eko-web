@@ -5,11 +5,10 @@
 	import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "$lib/components/ui/card/index.js";
 	import { ArrowLeft, Lock, Eye, EyeOff, AlertCircle } from '@lucide/svelte';
 	import { supabase } from '$lib/supabase.js';
-	import type { PageData } from './$types';
     import { Toaster, toast } from 'svelte-sonner'
+	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 
-	
-	export let data: PageData;
 	
 	let password = '';
 	let confirmPassword = '';
@@ -17,6 +16,53 @@
 	let showConfirmPassword = false;
 	let isLoading = false;
     let email = '';
+	let hasValidToken = false;
+	let tokenError = '';
+	let isCheckingToken = true;
+
+	onMount(async () => {
+		if (!browser) return;
+		
+		try {
+			// Parse the URL hash fragment for Supabase auth tokens
+			const hashParams = new URLSearchParams(window.location.hash.substring(1));
+			const accessToken = hashParams.get('access_token');
+			const refreshToken = hashParams.get('refresh_token');
+			const type = hashParams.get('type');
+			
+			// Check if this is a password reset flow
+			if (type !== 'recovery' || !accessToken) {
+				hasValidToken = false;
+				tokenError = 'Invalid or missing reset token. Please request a new password reset link.';
+				isCheckingToken = false;
+				return;
+			}
+			
+			// Set the session using the tokens from the URL hash
+			const { data: sessionData, error } = await supabase.auth.setSession({
+				access_token: accessToken,
+				refresh_token: refreshToken || ''
+			});
+			
+			if (error) {
+				console.error('Session error:', error);
+				hasValidToken = false;
+				tokenError = 'Invalid or expired reset token. Please request a new password reset link.';
+			} else {
+				hasValidToken = true;
+				// Clean the URL by removing the hash fragment
+				if (window.history && window.history.replaceState) {
+					window.history.replaceState({}, document.title, window.location.pathname);
+				}
+			}
+		} catch (err) {
+			console.error('Unexpected error:', err);
+			hasValidToken = false;
+			tokenError = 'An unexpected error occurred. Please try again.';
+		} finally {
+			isCheckingToken = false;
+		}
+	});
 	
 	function sendNewResetLink() {
         isLoading = true;
@@ -85,7 +131,20 @@
 <div class="min-h-screen bg-gradient-to-br from-background to-muted/50 flex items-center justify-center p-4 sm:p-4">
 	<div class="w-full max-w-md">
 		<Card class="sm:shadow-2xl sm:border-0 sm:bg-card/95 sm:backdrop-blur-sm border-0 shadow-none bg-transparent">
-			{#if data.hasValidToken}
+			{#if isCheckingToken}
+				<!-- Loading state while checking token -->
+				<CardHeader class="text-center space-y-4 pb-8 px-0 sm:px-6">
+					<div class="mx-auto w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+						<div class="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+					</div>
+					<div class="space-y-2">
+						<CardTitle class="text-2xl font-bold">Verifying Reset Link</CardTitle>
+						<CardDescription class="text-muted-foreground">
+							Please wait while we verify your password reset link...
+						</CardDescription>
+					</div>
+				</CardHeader>
+			{:else if hasValidToken}
 				<!-- Valid token - show password reset form -->
 				<CardHeader class="text-center space-y-4 pb-8 px-0 sm:px-6">
 					<div class="mx-auto w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
@@ -196,7 +255,7 @@
 					<div class="space-y-2">
 						<CardTitle class="text-2xl font-bold text-destructive">Invalid Reset Link</CardTitle>
 						<CardDescription class="text-muted-foreground">
-							{data.error || 'The password reset link is invalid or has expired.'}
+							{tokenError || 'The password reset link is invalid or has expired.'}
 						</CardDescription>
 					</div>
 				</CardHeader>
